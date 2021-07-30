@@ -1,40 +1,26 @@
-########################################################
-############## We use a java base image ################
-########################################################
 FROM adoptopenjdk/openjdk16:latest AS build
 
-MAINTAINER Andreas Wachter <buddyspencer@protonmail.com>
-
-ARG purpurspigot_ci_url=https://api.pl3x.net/v2/purpur/1.17.1/latest/download
-ENV PURPURSPIGOT_CI_URL=$purpurspigot_ci_url
+ARG purpur_ci_url=https://api.pl3x.net/v2/purpur/1.17.1/latest/download
+ENV PURPUR_CI_URL=$purpur_ci_url
 
 WORKDIR /opt/minecraft
 
-# Download purpurclip
-ADD ${PURPURSPIGOT_CI_URL} purpurclip.jar
+# Download purpur_unpatched
+ADD ${PURPUR_CI_URL} purpur_unpatched.jar
 
-# User
-RUN useradd -ms /bin/bash minecraft && \
-    chown minecraft /opt/minecraft -R
-
-USER minecraft
-
-# Run purpurclip and obtain patched jar
-RUN /opt/java/openjdk/bin/java -jar /opt/minecraft/purpurclip.jar; exit 0
+# Run purpur_unpatched and obtain patched jar
+RUN /opt/java/openjdk/bin/java -jar /opt/minecraft/purpur_unpatched.jar; exit 0
 
 # Copy built jar
-RUN mv /opt/minecraft/cache/patched*.jar purpurspigot.jar
+RUN mv /opt/minecraft/cache/patched*.jar purpur.jar
 
-########################################################
-############## Running environment #####################
-########################################################
 FROM adoptopenjdk/openjdk16:latest AS runtime
 
 # Working directory
 WORKDIR /data
 
 # Obtain runable jar from build stage
-COPY --from=build /opt/minecraft/purpurspigot.jar /opt/minecraft/purpurspigot.jar
+COPY --from=build /opt/minecraft/purpur.jar /opt/minecraft/purpur.jar
 
 # Volumes for the external data (Server, World, Config...)
 VOLUME "/data"
@@ -54,4 +40,4 @@ ENV JAVAFLAGS=$java_flags
 WORKDIR /data
 
 # Entrypoint with java optimisations
-ENTRYPOINT /opt/java/openjdk/bin/java -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpurspigot.jar --nojline nogui
+ENTRYPOINT /opt/java/openjdk/bin/java -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar --nojline nogui
