@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk16:latest AS build
+FROM openjdk:16-slim AS build
 
 ARG purpur_ci_url=https://api.pl3x.net/v2/purpur/1.17.1/latest/download
 ENV PURPUR_CI_URL=$purpur_ci_url
@@ -9,12 +9,12 @@ WORKDIR /opt/minecraft
 ADD ${PURPUR_CI_URL} purpur_unpatched.jar
 
 # Run purpur_unpatched and obtain patched jar
-RUN /opt/java/openjdk/bin/java -jar /opt/minecraft/purpur_unpatched.jar; exit 0
+RUN /usr/local/openjdk-16/bin/java -jar /opt/minecraft/purpur_unpatched.jar; exit 0
 
 # Copy built jar
 RUN mv /opt/minecraft/cache/patched*.jar purpur.jar
 
-FROM adoptopenjdk/openjdk16:latest AS runtime
+FROM openjdk:16-slim AS runtime
 
 # Working directory
 WORKDIR /data
@@ -40,4 +40,4 @@ ENV JAVAFLAGS=$java_flags
 WORKDIR /data
 
 # Entrypoint with java optimisations
-ENTRYPOINT /opt/java/openjdk/bin/java -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar --nojline nogui
+ENTRYPOINT /usr/local/openjdk-16/bin/java -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar --nojline nogui
