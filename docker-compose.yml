@@ -1,0 +1,11 @@
+version: '2'
+services:
+    'purpur':
+        image: 'buddyspencer/purpur:1.18.2'
+        container_name: purpur-mc
+        environment:
+            - MEMORYSIZE=2G
+        volumes:
+            - './data:/data:rw'
+        ports:
+            - '25565:25565'

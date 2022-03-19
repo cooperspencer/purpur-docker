@@ -19,5 +19,21 @@ docker run \
 docker attach mc
 ```
 
+## Docker Compose
+
+```version: '2'
+services:
+    'purpur':
+        image: 'buddyspencer/purpur:latest'
+        container_name: mc
+        environment:
+            - MEMORYSIZE=1G
+        volumes:
+            - '/path/to/volume:/data:rw'
+        ports:
+            - '25565:25565'
+```
+**example file in repo*
+
 ## Availability
 This container will be available for AMD64 and ARM64
