@@ -1,26 +1,26 @@
-FROM openjdk:16-slim AS build
+FROM openjdk:17-slim AS build
 
-ARG purpur_ci_url=https://api.pl3x.net/v2/purpur/1.17.1/latest/download
-ENV PURPUR_CI_URL=$purpur_ci_url
+ENV PURPURSPIGOT_CI_URL=https://api.purpurmc.org/v2/purpur/1.19.2/latest/download
+ENV RCON_URL=https://github.com/itzg/rcon-cli/releases/download/1.6.0/rcon-cli_1.6.0_linux_386.tar.gz
 
 WORKDIR /opt/minecraft
 
-# Download purpur_unpatched
-ADD ${PURPUR_CI_URL} purpur_unpatched.jar
+# Download purpurclip
+ADD ${PURPURSPIGOT_CI_URL} purpur.jar
 
-# Run purpur_unpatched and obtain patched jar
-RUN /usr/local/openjdk-16/bin/java -jar /opt/minecraft/purpur_unpatched.jar; exit 0
+# Install and run rcon
+ADD ${RCON_URL} /tmp/rcon-cli.tgz
+RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
+  rm /tmp/rcon-cli.tgz
 
-# Copy built jar
-RUN mv /opt/minecraft/cache/patched*.jar purpur.jar
-
-FROM openjdk:16-slim AS runtime
+FROM openjdk:17-slim AS runtime
 
 # Working directory
 WORKDIR /data
 
 # Obtain runable jar from build stage
 COPY --from=build /opt/minecraft/purpur.jar /opt/minecraft/purpur.jar
+COPY --from=build /usr/local/bin/rcon-cli /usr/local/bin/rcon-cli
 
 # Volumes for the external data (Server, World, Config...)
 VOLUME "/data"
@@ -40,4 +40,4 @@ ENV JAVAFLAGS=$java_flags
 WORKDIR /data
 
 # Entrypoint with java optimisations
-ENTRYPOINT /usr/local/openjdk-16/bin/java -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar --nojline nogui
+ENTRYPOINT /usr/local/openjdk-17/bin/java -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar --nojline nogui
