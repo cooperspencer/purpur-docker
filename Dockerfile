@@ -1,7 +1,9 @@
 FROM openjdk:17-slim AS build
 
+ARG TARGETARCH
+
 ENV PURPURSPIGOT_CI_URL=https://api.purpurmc.org/v2/purpur/1.19.3/latest/download
-ENV RCON_URL=https://github.com/itzg/rcon-cli/releases/download/1.6.1/rcon-cli_1.6.1_linux_arm64.tar.gz
+ENV RCON_URL=https://github.com/itzg/rcon-cli/releases/download/1.6.1/rcon-cli_1.6.1_linux_${TARGETARCH}.tar.gz
 
 WORKDIR /opt/minecraft
 
