@@ -1,4 +1,4 @@
-FROM openjdk:17-slim AS build
+FROM eclipse-temurin:21-jre-alpine AS build
 
 ARG TARGETARCH
 
@@ -15,7 +15,7 @@ ADD ${RCON_URL} /tmp/rcon-cli.tgz
 RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
   rm /tmp/rcon-cli.tgz
 
-FROM openjdk:17-slim AS runtime
+FROM eclipse-temurin:21-jre-alpine AS runtime
 
 # Working directory
 WORKDIR /data
@@ -42,4 +42,4 @@ ENV JAVAFLAGS=$java_flags
 WORKDIR /data
 
 # Entrypoint with java optimisations
-ENTRYPOINT /usr/local/openjdk-17/bin/java -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar --nojline nogui
+ENTRYPOINT java -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar --nojline nogui
