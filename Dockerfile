@@ -3,7 +3,7 @@ FROM eclipse-temurin:21-jre-alpine AS build
 ARG TARGETARCH
 
 ENV PURPURSPIGOT_CI_URL=https://api.purpurmc.org/v2/purpur/26.1.2/latest/download
-ENV RCON_URL=https://github.com/itzg/rcon-cli/releases/download/1.7.4/rcon-cli_1.7.4_linux_${TARGETARCH}.tar.gz
+ENV RCON_URL=https://github.com/itzg/rcon-cli/releases/download/1.7.5/rcon-cli_1.7.5_linux_${TARGETARCH}.tar.gz
 
 WORKDIR /opt/minecraft
 
